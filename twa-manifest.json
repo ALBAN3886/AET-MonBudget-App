@@ -15,7 +15,10 @@
   "startUrl": "/",
   "iconUrl": "https://budget.aet-alban.online/icon-512.png",
   "splashScreenFadeOutDuration": 300,
-  "signingKey": { "path": "./android.keystore", "alias": "upload" },
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "upload"
+  },
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
   "shortcuts": [],
@@ -27,5 +30,5 @@
   "isChromeOSOnly": false,
   "isMetaQuest": false,
   "fullScopeUrl": "https://budget.aet-alban.online/",
-  "minSdkVersion": 21
+  "minSdkVersion": 24
 }
