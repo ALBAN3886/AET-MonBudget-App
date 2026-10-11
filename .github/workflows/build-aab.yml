@@ -14,11 +14,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Config Bubblewrap
+      - name: Preparer le SDK Android
         run: |
+          SDK="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          echo "SDK=$SDK"
+          SDKM="$SDK/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKM" --licenses > /dev/null || true
+          "$SDKM" "platform-tools" "platforms;android-35" "build-tools;35.0.0" > /dev/null
+          if [ ! -e "$SDK/tools" ]; then sudo ln -sfn "$SDK/cmdline-tools/latest" "$SDK/tools"; fi
+          echo "--- contenu du SDK ---"; ls "$SDK"; ls "$SDK/build-tools"
           mkdir -p ~/.bubblewrap
-          echo "{\"jdkPath\":\"$JAVA_HOME\",\"androidSdkPath\":\"$ANDROID_HOME\"}" > ~/.bubblewrap/config.json
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+          echo "{\"jdkPath\":\"$JAVA_HOME\",\"androidSdkPath\":\"$SDK\"}" > ~/.bubblewrap/config.json
+          cat ~/.bubblewrap/config.json
       - name: Restaurer la cle
         run: echo "${{ secrets.KEYSTORE_B64 }}" | tr -d '\n' | base64 -d > android.keystore
       - name: Numero de version
@@ -30,6 +37,7 @@ jobs:
           BUBBLEWRAP_KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         run: |
           npm install -g @bubblewrap/cli
+          bubblewrap doctor || true
           bubblewrap update --skipVersionUpgrade
           bubblewrap build --skipPwaValidation
       - uses: actions/upload-artifact@v4
